@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/webjars/bootstrap/5.1.0/css/bootstrap.min.css">
+    <title>Pico y Placa Predictor</title>
+    <script>
+        // Function to check if the car can drive
+        async function checkCanDrive() {
+            // Get values from the form fields
+            const plate = document.getElementById('plate').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            
+            // Make an asynchronous fetch call to the Spring Boot backend
+            const response = await fetch(`/api/canDrive?plate=${plate}&date=${date}&time=${time}`);
+            const message = await response.text();
+            
+            // Get the message modal and populate it with the message
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerText = message;
+            const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+            modal.show();
+        }
+        
+        // Function to hide the modal and reset the form
+        function hideModalAndResetForm() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('messageModal'));
+            modal.hide();
+            document.getElementById('plate').value = "";
+            document.getElementById('date').value = "";
+            document.getElementById('time').value = "";
+        }
+    </script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Pico y Placa Predictor</h1>
+        
+        <!-- Form to enter data -->
+        <form onsubmit="event.preventDefault(); checkCanDrive();">
+            <div class="mb-3">
+                <label for="plate" class="form-label">License Plate</label>
+                <input type="text" id="plate" name="plate" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="date" class="form-label">Date</label>
+                <input type="date" id="date" name="date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="time" class="form-label">Time</label>
+                <input type="time" id="time" name="time" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Check</button>
+        </form>
+        
+        <!-- Bootstrap Modal for Message Display -->
+        <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Result</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body" id="modal-body">
+                <!-- Message will appear here -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="hideModalAndResetForm()">Okay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <script src="/webjars/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
